@@ -5,26 +5,26 @@ import axios from "axios";
 export default function AddClient() {
 
   const [formData, setFormData] = useState({
-    first_name:null,
-    last_name:null,
-    cmimi:null,
-    kapare:null,
-    numri_telefonit:null,
-    modeli_veshjes:null,
-    data_porosise:null,
-    data_marrjes:null,
-    krahet:null,
-    gjoksi: null,
-    beli: null,
-    kollani: null,
-    kukat: null,
-    gjatesia_kemishes: null,
-    gjatesia_fistonit: null,
-    gjatesia_menges: null,
-    numri_kembes: null,
-    gjatesia_kembes: null,  
-    pulpi: null,
-    foto_paths:null
+    first_name:"",
+    last_name:"",
+    cmimi:"",
+    kapare:"",
+    numri_telefonit:"",
+    modeli_veshjes:"",
+    data_porosise:"",
+    data_marrjes:"",
+    krahet:"",
+    gjoksi: "",
+    beli: "",
+    kollani:"",
+    kukat: "",
+    gjatesia_kemishes: "",
+    gjatesia_fistonit: "",
+    gjatesia_menges: "",
+    numri_kembes: "",
+    gjatesia_kembes: "",  
+    pulpi: "",
+    foto:[]
   });
 
 
@@ -46,7 +46,9 @@ export default function AddClient() {
   
   const handleFotot = (event) => {
     const files = Array.from(event.target.files);
-    setFormData({...formData, foto_paths:files});
+    setFormData({...formData, foto:files});
+    
+  console.log("Selected files:", files.map(file => file.name));
   };
 
   
@@ -73,6 +75,7 @@ export default function AddClient() {
                 autoComplete="off"
                 value={formData.first_name ?? ""}
                 onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+                required
               />
               
               <label
@@ -91,6 +94,7 @@ export default function AddClient() {
                 autoComplete="off"
                 value={formData.last_name ??""}
                 onChange={(e) => setFormData({...formData, last_name: e.target.value})}
+                required
               />
               
               <label
@@ -185,6 +189,7 @@ export default function AddClient() {
                 autoComplete="off"
                 value={formData.data_porosise ?? new Date().toISOString().split("T")[0]}
                 onChange={(e) => setFormData({...formData, data_porosise:e.target.value})}
+                required
 
               />
               <label
@@ -203,6 +208,7 @@ export default function AddClient() {
                 autoComplete="off"
                 value={formData.data_marrjes ?? new Date().toISOString().split("T")[0]}
                 onChange={(e) => setFormData({...formData, data_marrjes:e.target.value})}
+                required
               />
               <label
                 htmlFor="data_marrjes"

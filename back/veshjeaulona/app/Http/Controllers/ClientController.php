@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+// use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
     // Get all clients
+  
     public function index()
     {
         return Client::all();
@@ -31,7 +34,7 @@ class ClientController extends Controller
             'kapare' => 'nullable|string',
             'data_porosise' => 'nullable|date',
             'data_marrjes' => 'nullable|date',
-            'foto_paths' => 'nullable|array',
+            'foto' => 'nullable|array',
             'shenim' => 'nullable|string',
             'krahet' => 'nullable|string', // Added new field
             'gjoksi' => 'nullable|string', // Added new field
@@ -44,6 +47,7 @@ class ClientController extends Controller
             'numri_kembes' => 'nullable|string', // Added new field
             'gjatesia_kembes' => 'nullable|string', // Added new field
             'pulpi' => 'nullable|string', // Added new field
+            'paguar' => 'nullable|boolean'
         ]);
     
         $client = Client::create([
@@ -55,7 +59,6 @@ class ClientController extends Controller
             'kapare' => $request->kapare,
             'data_porosise' => $request->data_porosise,
             'data_marrjes' => $request->data_marrjes,
-            'foto_paths' => $request->foto_paths,
             'shenim' => $request->shenim,
             'krahet' => $request->krahet, // New field
             'gjoksi' => $request->gjoksi, // New field
@@ -68,42 +71,15 @@ class ClientController extends Controller
             'numri_kembes' => $request->numri_kembes, // New field
             'gjatesia_kembes' => $request->gjatesia_kembes, // New field
             'pulpi' => $request->pulpi, // New field
-        ]);
-  
-        return response()->json($client);
-    }
-
-    // Update a client by ID
-    public function update(Request $request, $id)
-    {
-        $client = Client::findOrFail($id);
-
-        $request->validate([
-            'last_name' => 'sometimes|string',
-            'first_name' => 'sometimes|string',
-            'numri_telefonit' => 'sometimes|string',
-            'modeli_veshjes' => 'sometimes|string',
-            'cmimi' => 'sometimes|string',
-            'kapare' => 'sometimes|string',
-            'data_porosise' => 'sometimes|date',
-            'data_marrjes' => 'sometimes|date',
-            'foto_paths' => 'sometimes|array',
-            'shenim' => 'sometimes|string',
-            'krahet' => 'sometimes|string', // New field
-            'gjoksi' => 'sometimes|string', // New field
-            'beli' => 'sometimes|string', // New field
-            'kollani' => 'sometimes|string', // New field
-            'kukat' => 'sometimes|string', // New field
-            'gjatesia_kemishes' => 'sometimes|string', // New field
-            'gjatesia_fistonit' => 'sometimes|string', // New field
-            'gjatesia_menges' => 'sometimes|string', // New field
-            'numri_kembes' => 'sometimes|string', // New field
-            'gjatesia_kembes' => 'sometimes|string', // New field
-            'pulpi' => 'sometimes|string', // New field
+            'paguar' => $request -> paguar ?? false,
+            'foto_paths' => json_encode([])
         ]);
 
-        $client->update($request->all());
-
+        // Here I am trying to code it
+        $foto = $request -> file('foto');       
+        Storage::disk('local')->put("upload", $foto[0]);
+        dd($foto);
+        
         return response()->json($client);
     }
 

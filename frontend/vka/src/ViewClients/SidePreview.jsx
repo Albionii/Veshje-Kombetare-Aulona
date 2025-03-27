@@ -4,6 +4,7 @@ import ImageModal from "../Modals/ImageModal";
 import axios from "axios";
 
 export default function SidePreview ({show, exit, client, del}) {
+  useEffect(() => {setClientDetails(client)}, [client])
   const [clientDetails, setClientDetails] = useState(client);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [images, setImages] = useState([]);
@@ -169,16 +170,131 @@ export default function SidePreview ({show, exit, client, del}) {
             className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
         </label>
-        <label className="col-span-3 text-white">
-          Dimensionet:
-          <input
-            type="text"
-            name="dimensionet"
-            value={clientDetails.dimensionet ?? ""}
-            onChange={handleInputChange}
-            className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-        </label>
+        <fieldset className="grid md:grid-cols-2 md:gap-6 relative z-0 w-full mb-5 group border border-gray-500 p-4 rounded col-span-3">
+            <legend className="px-2 font-semibold" align="center">Dimensionet</legend>
+            <label className="col-span-1 text-white">
+              Krahet:
+              <input
+                type="text"
+                name="krahet"
+                value={clientDetails.krahet ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            <label className="col-span-1 text-white">
+              Gjoksi:
+              <input
+                type="text"
+                name="dimensionet"
+                value={clientDetails.gjoksi ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            <label className="col-span-1 text-white">
+              Beli:
+              <input
+                type="text"
+                name="beli"
+                value={clientDetails.beli ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Kollani:
+              <input
+                type="text"
+                name="kollani"
+                value={clientDetails.kollani ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Kukat:
+              <input
+                type="text"
+                name="kukat"
+                value={clientDetails.kukat ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Gjatësia e Këmishës:
+              <input
+                type="text"
+                name="gjatesia_kemishes"
+                value={clientDetails.gjatesia_kemishes ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Gjatësia e Fustanit:
+              <input
+                type="text"
+                name="gjatesia_fustanit"
+                value={clientDetails.gjatesia_fistonit ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Gjatësia e Mëngës:
+              <input
+                type="text"
+                name="gjatesia_menges"
+                value={clientDetails.gjatesia_menges ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Numri Këmbës:
+              <input
+                type="text"
+                name="dimensionet"
+                value={clientDetails.numri_kembes ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Gjatësia Këmbës:
+              <input
+                type="text"
+                name="dimensionet"
+                value={clientDetails.gjatesia_kembes ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            <label className="col-span-1 text-white">
+              Pulpi:
+              <input
+                type="text"
+                name="pulpi"
+                value={clientDetails.pulpi ?? ""}
+                onChange={handleInputChange}
+                className="w-full p-2 mt-1 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              />
+            </label>
+            
+            
+            
+        </fieldset>
+        
         <label className="col-span-3 text-white">
           Shënimi:
           <textarea

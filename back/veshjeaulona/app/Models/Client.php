@@ -31,11 +31,13 @@ class Client extends Model
         'numri_kembes',
         'gjatesia_kembes',
         'pulpi', 
+        'paguar'
     ];
 
     protected $casts = [
         'data_porosise' => 'date',
         'data_marrjes' => 'date',
         'foto_paths' => 'array',
+        'paguar' => 'boolean'
     ];
 }
