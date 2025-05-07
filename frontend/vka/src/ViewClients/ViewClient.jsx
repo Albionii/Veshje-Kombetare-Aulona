@@ -29,7 +29,7 @@ export default function ViewClient() {
 
   const fetchClients = () => {
     axios.get(import.meta.env.VITE_API_BASE_URL + "/client", {withCredentials:true})
-    .then((response) => setClients(response.data))
+    .then((response) => {setClients(response.data)})
   };
 
   const handleDelete = (client) => {

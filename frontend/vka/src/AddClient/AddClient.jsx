@@ -35,13 +35,40 @@ export default function AddClient() {
 
   };
 
-  const createUser = () => {
-    axios
-    .post(import.meta.env.VITE_API_BASE_URL + "/client", formData, {withCredentials:true})
-    .then(() => alert("Klienti u shtua me sukses."))
-    
-  }
-
+  const createUser = async () => {
+    try {
+      const data = new FormData();
+  
+      // Append all fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'foto') {
+          value.forEach((file) => {
+            data.append('foto[]', file); // important: use '[]' for multiple images
+          });
+        } else {
+          data.append(key, value);
+        }
+      });
+  
+      const response = await axios.post(
+        import.meta.env.VITE_API_BASE_URL + '/client', data,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }
+      );
+  
+      alert("Klienti u shtua me sukses!");
+    } catch (err) {
+      console.error('❌ Upload failed:', err.response?.data || err.message);
+      alert('Upload failed');
+    }
+  };
+  
 
   
   const handleFotot = (event) => {

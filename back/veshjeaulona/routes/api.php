@@ -15,13 +15,19 @@ Route::prefix('users')->group(function () {
 });
 
 Route::apiResource('client', ClientController::class);
+Route::get('/client/{id}/images', [ClientController::class, 'getImages']);
+Route::get('/client/{clientId}/image/{filename}', [ClientController::class, 'serveImage']);
+Route::delete('/client/{clientId}/image/{imageId}', [ClientController::class, 'deleteImage']);
+
 
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::get('/auth/check-auth', [AuthController::class, 'checkAuth']);
 
-Route::get('/', function () {
-  return view('welcome');
-});
+
+
+// Route::get('/', function () {
+//   return view('welcome');
+// });
 

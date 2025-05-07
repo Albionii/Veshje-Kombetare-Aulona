@@ -54,7 +54,7 @@ export default function DeleteModal({ show, onClose, onConfirm, client}) {
                 />
               </svg>
               <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                A dëshironi që ta fshini klientin <br/> "{(client.firstName ?? "") + " "  + (client.lastName ?? "")}" ?
+                A dëshironi që ta fshini klientin <br/> "{(client.first_name ?? "") + " "  + (client.last_name ?? "")}" ?
               </h3>
               <button
                 type="button"

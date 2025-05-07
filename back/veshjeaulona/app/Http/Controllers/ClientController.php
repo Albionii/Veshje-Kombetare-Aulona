@@ -6,6 +6,9 @@ use App\Models\Client;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+
 
 class ClientController extends Controller
 {
@@ -23,6 +26,48 @@ class ClientController extends Controller
     }
 
     // Create a new client
+    
+
+    public function update(Request $request, $id)
+    {
+        $client = Client::findOrFail($id);
+
+        $request->validate([
+            'last_name' => 'sometimes|string|nullable',
+            'first_name' => 'sometimes|string|nullable',
+            'numri_telefonit' => 'sometimes|string|nullable',
+            'modeli_veshjes' => 'sometimes|string|nullable',
+            'cmimi' => 'sometimes|string|nullable',
+            'kapare' => 'sometimes|string|nullable',
+            'data_porosise' => 'sometimes|date|nullable',
+            'data_marrjes' => 'sometimes|date|nullable',
+            // 'foto_paths' => 'sometimes|array',
+            'shenim' => 'sometimes|string|nullable',
+            'krahet' => 'sometimes|string|nullable',   
+            'gjoksi' => 'sometimes|string|nullable',  
+            'beli' => 'sometimes|string|nullable',   
+            'kollani' => 'sometimes|string|nullable',   
+            'kukat' => 'sometimes|string|nullable',   
+            'gjatesia_kemishes' => 'sometimes|string|nullable',   
+            'gjatesia_fistonit' => 'sometimes|string|nullable',   
+            'gjatesia_menges' => 'sometimes|string|nullable',   
+            'numri_kembes' => 'sometimes|string|nullable',   
+            'gjatesia_kembes' => 'sometimes|string|nullable',   
+            'pulpi' => 'sometimes|string|nullable'
+        ]);
+
+        $client->update($request->all());
+
+        return response()->json($client);
+    }
+
+    // Delete a client by ID
+    public function destroy($id)
+    {
+        Client::destroy($id);
+        return response()->json(['message' => 'Client deleted successfully']);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -35,58 +80,122 @@ class ClientController extends Controller
             'data_porosise' => 'nullable|date',
             'data_marrjes' => 'nullable|date',
             'foto' => 'nullable|array',
-            'shenim' => 'nullable|string',
-            'krahet' => 'nullable|string', // Added new field
-            'gjoksi' => 'nullable|string', // Added new field
-            'beli' => 'nullable|string', // Added new field
-            'kollani' => 'nullable|string', // Added new field
-            'kukat' => 'nullable|string', // Added new field
-            'gjatesia_kemishes' => 'nullable|string', // Added new field
-            'gjatesia_fistonit' => 'nullable|string', // Added new field
-            'gjatesia_menges' => 'nullable|string', // Added new field
-            'numri_kembes' => 'nullable|string', // Added new field
-            'gjatesia_kembes' => 'nullable|string', // Added new field
-            'pulpi' => 'nullable|string', // Added new field
-            'paguar' => 'nullable|boolean'
-        ]);
-    
-        $client = Client::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'numri_telefonit' => $request->numri_telefonit,
-            'modeli_veshjes' => $request->modeli_veshjes,
-            'cmimi' => $request->cmimi,
-            'kapare' => $request->kapare,
-            'data_porosise' => $request->data_porosise,
-            'data_marrjes' => $request->data_marrjes,
-            'shenim' => $request->shenim,
-            'krahet' => $request->krahet, // New field
-            'gjoksi' => $request->gjoksi, // New field
-            'beli' => $request->beli, // New field
-            'kollani' => $request->kollani, // New field
-            'kukat' => $request->kukat, // New field
-            'gjatesia_kemishes' => $request->gjatesia_kemishes, // New field
-            'gjatesia_fistonit' => $request->gjatesia_fistonit, // New field
-            'gjatesia_menges' => $request->gjatesia_menges, // New field
-            'numri_kembes' => $request->numri_kembes, // New field
-            'gjatesia_kembes' => $request->gjatesia_kembes, // New field
-            'pulpi' => $request->pulpi, // New field
-            'paguar' => $request -> paguar ?? false,
-            'foto_paths' => json_encode([])
+            // 'foto.*' => 'image|mimes:jpeg,png,jpg|max:10240', // max 10MB (value is in KB)
         ]);
 
-        // Here I am trying to code it
-        $foto = $request -> file('foto');       
-        Storage::disk('local')->put("upload", $foto[0]);
-        dd($foto);
-        
-        return response()->json($client);
+        $client = Client::create([
+            'first_name' => $request->first_name ?? null,
+            'last_name' => $request->last_name ?? null,
+            'numri_telefonit' => $request->numri_telefonit ?? null,
+            'modeli_veshjes' => $request->modeli_veshjes ?? null,
+            'cmimi' => $request->cmimi ?? null,
+            'kapare' => $request->kapare ?? null,
+            'data_porosise' => $request->data_porosise ?? null,
+            'data_marrjes' => $request->data_marrjes ?? null,
+            'foto_paths' => json_encode([]) 
+        ]);
+
+        // Handle image uploads
+        // Inside your store method:
+        $uploadedPaths = [];
+        if ($request->hasFile('foto')) {
+            $uploadDir = "uploads/clients/{$client->id}";
+            
+            // Create directory if it doesn't exist (for public storage)
+            if (!File::exists(storage_path("app/public/{$uploadDir}"))) {
+                File::makeDirectory(storage_path("app/public/{$uploadDir}"), 0755, true);
+            }
+
+            foreach ($request->file('foto') as $image) {
+                // Generate unique filename
+                $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                
+                // Store in the public directory (publicly accessible)
+                $path = $image->storeAs($uploadDir, $filename, 'public');
+                
+                $uploadedPaths[] = [
+                    'path' => $path,
+                    'original_name' => $image->getClientOriginalName(),
+                    'size' => $image->getSize(),
+                ];
+            }
+
+            // Update client with image paths
+            $client->update(['foto_paths' => json_encode($uploadedPaths)]);
+        }
+
+        return response()->json([
+            'message' => 'Client created successfully',
+            'client' => $client,
+        ], 201);
     }
 
-    // Delete a client by ID
-    public function destroy($id)
+
+    public function getImages($clientId)
     {
-        Client::destroy($id);
-        return response()->json(['message' => 'Client deleted successfully']);
+        // Define the folder path based on the client ID (in the public disk)
+        $folderPath = storage_path("app/public/uploads/clients/{$clientId}");
+
+        // Check if the folder exists
+        if (!File::exists($folderPath)) {
+            return response()->json(['message' => 'No images found for this client.'], 404);
+        }
+
+        // Get all files in the directory
+        $files = File::allFiles($folderPath);
+
+        // Map files to their relative paths (to serve via the public URL)
+        $imagePaths = array_map(function ($file) use ($clientId) {
+            // Generate the file's relative path (accessible via the public URL)
+            $relativePath = 'storage/uploads/clients/' . $clientId . '/' . $file->getFilename();
+
+            // Return the relative URL to the image
+            return url($relativePath);
+        }, $files);
+
+        return response()->json([
+            'images' => $imagePaths
+        ]);
+    }
+
+    
+    
+    // Serve a protected image
+    public function serveImage($clientId, $filename)
+    {
+        // Verify client exists and user has permission
+        $client = Client::findOrFail($clientId);
+        
+        $path = "uploads/clients/{$clientId}/{$filename}";
+        
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+
+        // Add any additional authorization checks here
+        
+        return response()->file(storage_path("app/{$path}"));
+    }
+
+    // Delete an image
+    public function deleteImage($clientId, $imageId)
+    {
+        $client = Client::findOrFail($clientId);
+        $images = json_decode($client->foto_paths, true) ?? [];
+        
+        if (!isset($images[$imageId])) {
+            abort(404);
+        }
+
+        // Delete the file
+        Storage::delete($images[$imageId]['path']);
+        
+        // Remove from array
+        array_splice($images, $imageId, 1);
+        
+        // Update client record
+        $client->update(['foto_paths' => json_encode(array_values($images))]);
+        
+        return response()->json(['message' => 'Image deleted successfully']);
     }
 }

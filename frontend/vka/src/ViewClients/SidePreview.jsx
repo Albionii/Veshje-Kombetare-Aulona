@@ -11,6 +11,14 @@ export default function SidePreview ({show, exit, client, del}) {
   const [imageClick, setImageClicked] = useState('');
   const [isImgModalOpen, setIsImgModalOpen] = useState(false);
 
+  useEffect(() => {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/client/${client.id}/images`, { withCredentials: true })
+        .then((res) => setImages(res.data.images))
+        .catch((err) => console.error("Error loading images"));
+    // console.log(JSON.stringify(client))
+  }, [client]);
+  
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -313,43 +321,24 @@ export default function SidePreview ({show, exit, client, del}) {
         </dt>
       </dl>
       <dl className="grid grid-cols-2 gap-4 mb-4">
-        {images.length > 0 ? (
+      {images.length > 0 ? (
           images.map((image, index) => (
             <div
               key={index}
-              className="col-span-2 p-3 bg-gray-100 rounded-lg border border-gray-200 dark:bg-gray-700 sm:col-span-1 dark:border-gray-600 flex justify-center items-center"
-              onClick={() =>handleImageClick(image)}
+              className="col-span-2 p-3 bg-gray-100 rounded-lg border border-gray-200 dark:bg-gray-700 sm:col-span-1 dark:border-gray-600 flex justify-center items-center cursor-pointer"
+              onClick={() => handleImageClick(image)}
             >
-                <button
-                  type="button"
-                  data-drawer-dismiss="drawer-read-product-advanced"
-                  aria-controls="drawer-read-product-advanced"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  onClick={handleExit}
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="sr-only">Close menu</span>
-                </button>
-              <img src={image} alt={`Client ${clientDetails.name} ${index + 1}`} />
+              <img
+                src={image} // or wherever you're storing it
+                alt={`Foto ${index + 1}`}
+                className="h-32 object-contain rounded shadow"
+              />
             </div>
           ))
         ) : (
-          <div className="col-span-2 p-3 bg-gray-100 rounded-lg border border-gray-200 dark:bg-gray-700 sm:col-span-2 dark:border-gray-600 text-center">
-            <p className="text-white">No photos available.</p>
-          </div>
+          <p className="text-white col-span-2">Nuk ka foto për këtë klient.</p>
         )}
+
       </dl>
       <div className="flex bottom-0 left-0 justify-center pb-4 space-x-4 w-full mb-5">
         <button

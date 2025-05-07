@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
 
-    public function hi(){
-      return "hii";
-    }
     // Get all users
     public function index()
     {
