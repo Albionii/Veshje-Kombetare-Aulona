@@ -31,7 +31,8 @@ class Client extends Model
         'numri_kembes',
         'gjatesia_kembes',
         'pulpi', 
-        'paguar'
+        'paguar',
+        'user_id'
     ];
 
     protected $casts = [

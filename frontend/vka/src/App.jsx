@@ -12,6 +12,7 @@ import "primereact/resources/themes/bootstrap4-dark-blue/theme.css"; // Theme
 import "primereact/resources/primereact.min.css"; // Core CSS
 import "primeicons/primeicons.css"; // Icons
 import Statistics from './statistics/Statistics';
+import Register from './login/Register';
 
 
 function App() {
@@ -20,12 +21,15 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        
+        <Route path="/register" element={<Register />} />
 
         <Route element={<ProtectRoutes/>}>
           <Route path="/" element={<Home />} />
           <Route path="/add" element={<AddClient />} />
           <Route path="/view" element={<ViewClient />} />
           <Route path="/statistics" element={<Statistics />} />
+
           <Route path="*" element={<Home/>}/>
         </Route>
           

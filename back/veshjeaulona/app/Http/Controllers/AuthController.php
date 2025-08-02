@@ -40,6 +40,25 @@ class AuthController extends Controller
     
         return response()->json(['message' => 'Login successful'])->withCookie($cookie);
     }
+
+    public function register(Request $request)
+{
+    $request->validate([
+        'username' => 'required|string|unique:users',
+        'password' => 'required|string|min:6',
+        'name'     => 'required|string',
+    ]);
+
+    
+    $user = User::create([
+        'username' => $request->username,
+        'password' => Hash::make($request->password),
+        'name'     => $request->name,
+    ]);
+
+    return response()->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
+}
+
     
 
     // Logout method (Invalidate token)
@@ -71,6 +90,21 @@ class AuthController extends Controller
     
             return response()->json(['message' => 'Authenticated', 'user' => $user], Response::HTTP_OK);
         } catch (\Exception $e) {
+            return response()->json(['message' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+    }
+
+    public function getUserIdFromToken(Request $request){
+        try {
+            $token = $request->cookie('token');
+            if (!$token) {
+                throw new \Exception('No token found');
+            }
+            $user = JWTAuth::setToken($token)->authenticate();
+            return $user -> id;
+    
+        }
+        catch(Exception $e) {
             return response()->json(['message' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
     }

@@ -9,7 +9,6 @@ export default function ProtectRoutes() {
   useEffect(() => {
     axios.get(import.meta.env.VITE_API_BASE_URL + "/auth/check-auth", { withCredentials: true })
       .then(() => {
-        console.log("auth : " + auth);
         setAuth(true)
       })
       .catch((error) => {

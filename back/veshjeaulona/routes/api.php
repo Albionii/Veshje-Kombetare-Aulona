@@ -14,20 +14,19 @@ Route::prefix('users')->group(function () {
   Route::delete('/delete/{id}', [UserController::class, 'destroy']); // Delete a user
 });
 
-Route::apiResource('client', ClientController::class);
-Route::get('/client/{id}/images', [ClientController::class, 'getImages']);
-Route::get('/client/{clientId}/image/{filename}', [ClientController::class, 'serveImage']);
-Route::delete('/client/{clientId}/image/{imageId}', [ClientController::class, 'deleteImage']);
+Route::middleware('auth:api')->group(function () {
+  Route::apiResource('client', ClientController::class);
+  Route::get('/client/{id}/images', [ClientController::class, 'getImages']);
+  Route::get('/client/{clientId}/image/{filename}', [ClientController::class, 'serveImage']);
+  Route::delete('/client/{clientId}/image/{imageId}', [ClientController::class, 'deleteImage']);
+});
 
 
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::get('/auth/check-auth', [AuthController::class, 'checkAuth']);
+Route::get('/auth/id', [AuthController::class, 'getUserIdFromToken']);
 
-
-
-// Route::get('/', function () {
-//   return view('welcome');
-// });
 

@@ -8,21 +8,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class ClientController extends Controller
 {
     // Get all clients
   
-    public function index()
-    {
-        return Client::all();
-    }
+    // public function index()
+    // {
+    //     return Client::all();
+    // }
+
+    public function index(Request $request)
+{
+    $userId = $this->getUserIdFromToken($request);
+    return Client::where('user_id', $userId)->get();
+}
+
 
     // Get a client by ID
     public function show($id)
     {
-        return Client::findOrFail($id);
+        $userId = $this->getUserIdFromToken($request);
+        $client = Client::where('id', $id)->where('user_id', $userId)->firstOrFail();
+        return $client;
+
     }
 
     // Create a new client
@@ -30,7 +41,8 @@ class ClientController extends Controller
 
     public function update(Request $request, $id)
     {
-        $client = Client::findOrFail($id);
+        $userId = $this->getUserIdFromToken($request);
+        $client = Client::where('id', $id)->where('user_id', $userId)->firstOrFail();
 
         $request->validate([
             'last_name' => 'sometimes|string|nullable',
@@ -62,9 +74,20 @@ class ClientController extends Controller
     }
 
     // Delete a client by ID
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        Client::destroy($id);
+        $userId = $this->getUserIdFromToken($request);
+        $client = Client::where('id', $id)->where('user_id', $userId)->firstOrFail();
+
+
+        $folderPath = storage_path("app/public/uploads/clients/{$client->id}");
+
+        if (File::exists($folderPath)) {
+            File::deleteDirectory($folderPath);
+        }
+
+        $client->delete();
+
         return response()->json(['message' => 'Client deleted successfully']);
     }
 
@@ -80,10 +103,12 @@ class ClientController extends Controller
             'data_porosise' => 'nullable|date',
             'data_marrjes' => 'nullable|date',
             'foto' => 'nullable|array',
-            // 'foto.*' => 'image|mimes:jpeg,png,jpg|max:10240', // max 10MB (value is in KB)
         ]);
+        
+        $id = $this->getUserIdFromToken($request);
+        error_log("id : " . $id);
 
-        $client = Client::create([
+        $client = Client::create([  
             'first_name' => $request->first_name ?? null,
             'last_name' => $request->last_name ?? null,
             'numri_telefonit' => $request->numri_telefonit ?? null,
@@ -92,27 +117,22 @@ class ClientController extends Controller
             'kapare' => $request->kapare ?? null,
             'data_porosise' => $request->data_porosise ?? null,
             'data_marrjes' => $request->data_marrjes ?? null,
-            'foto_paths' => json_encode([]) 
+            'foto_paths' => json_encode([]),
+            'user_id' => $id, 
         ]);
 
-        // Handle image uploads
-        // Inside your store method:
+        // Handle image uploads (if any)
         $uploadedPaths = [];
         if ($request->hasFile('foto')) {
             $uploadDir = "uploads/clients/{$client->id}";
             
-            // Create directory if it doesn't exist (for public storage)
             if (!File::exists(storage_path("app/public/{$uploadDir}"))) {
                 File::makeDirectory(storage_path("app/public/{$uploadDir}"), 0755, true);
             }
 
             foreach ($request->file('foto') as $image) {
-                // Generate unique filename
                 $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
-                
-                // Store in the public directory (publicly accessible)
                 $path = $image->storeAs($uploadDir, $filename, 'public');
-                
                 $uploadedPaths[] = [
                     'path' => $path,
                     'original_name' => $image->getClientOriginalName(),
@@ -120,7 +140,6 @@ class ClientController extends Controller
                 ];
             }
 
-            // Update client with image paths
             $client->update(['foto_paths' => json_encode($uploadedPaths)]);
         }
 
@@ -129,6 +148,7 @@ class ClientController extends Controller
             'client' => $client,
         ], 201);
     }
+
 
 
     public function getImages($clientId)
@@ -163,8 +183,9 @@ class ClientController extends Controller
     // Serve a protected image
     public function serveImage($clientId, $filename)
     {
-        // Verify client exists and user has permission
-        $client = Client::findOrFail($clientId);
+        $userId = $this->getUserIdFromToken($request);
+        $client = Client::where('id', $clientId)->where('user_id', $userId)->firstOrFail();
+
         
         $path = "uploads/clients/{$clientId}/{$filename}";
         
@@ -180,7 +201,9 @@ class ClientController extends Controller
     // Delete an image
     public function deleteImage($clientId, $imageId)
     {
-        $client = Client::findOrFail($clientId);
+        $userId = $this->getUserIdFromToken($request);
+        $client = Client::where('id', $clientId)->where('user_id', $userId)->firstOrFail();
+
         $images = json_decode($client->foto_paths, true) ?? [];
         
         if (!isset($images[$imageId])) {
@@ -198,4 +221,20 @@ class ClientController extends Controller
         
         return response()->json(['message' => 'Image deleted successfully']);
     }
+
+
+    private function getUserIdFromToken(Request $request){
+        try {
+            $token = $request->cookie('token');
+            if (!$token) {
+                throw new \Exception('No token found');
+            }
+            $user = JWTAuth::setToken($token)->authenticate();
+            return $user->id;
+        } catch (\Exception $e) {
+            \Log::error("Token error: " . $e->getMessage());
+            abort(401, 'Unauthorized');
+        }
+    }
+
 }

@@ -12,7 +12,7 @@ export default function Header({pos}) {
   };
 
   const logout = () =>{
-    axios.post("https://api.veshjekombetareaulona.com/auth/logout",{}, {withCredentials:true})
+    axios.post(import.meta.env.VITE_API_BASE_URL + "/auth/logout",{}, {withCredentials:true})
     .then(()=>{
       alert("Logged out successfully")
       navigate("/login");

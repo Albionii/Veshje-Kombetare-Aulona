@@ -34,7 +34,7 @@ export default function Login() {
     <div className='w-full h-screen flex justify-center items-center'>
       <form className='w-[500px] bg-[#faf6ea] rounded p-9 flex justify-center items-center flex-col' onSubmit={handleSubmit}>
         <div className='flex justify-center items-center flex-col gap-4 mb-5'>
-          <span className='text-[30px] font-extralight'>WELCOME</span>
+          <span className='text-[30px] font-extralight text-black'>WELCOME</span>
           <img src={Logo} alt="" width={"70px"}/>
         </div>
 
@@ -84,7 +84,17 @@ export default function Login() {
             Login
           </button>
         </div>
+        <p className="text-sm text-gray-600 mt-4">
+          Nuk keni llogari?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
+            Regjistrohu
+          </span>
+        </p>
       </form>
+
 
     </div>
 

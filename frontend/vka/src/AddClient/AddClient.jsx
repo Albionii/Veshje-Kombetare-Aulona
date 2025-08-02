@@ -56,9 +56,7 @@ export default function AddClient() {
           withCredentials: true,
           headers: {
             'Content-Type': 'multipart/form-data',
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
+          }
         }
       );
   
